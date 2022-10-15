@@ -1,29 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from 'react'
+import Task from './Task.js'
+import Input from './Input.js'
 
 function App() {
-  const [todoList,setTodoList] = useState([]);
-  const [inputValue,setInputValue] = useState("");
+  const [todoList, setTodoList] = useState(
+    JSON.parse(localStorage.getItem('todoList')) ?? [],
+  )
+  const [inputValue, setInputValue] = useState('')
+
+  useEffect(() => {
+    localStorage.setItem('todoList', JSON.stringify(todoList))
+  }, [todoList])
 
   const handleEnter = (e) => {
-      if (e.key==="Enter"){
-        handleAdd();
-      }
+    if (e.key === 'Enter') {
+      handleAdd()
+    }
   }
-  
+
   const handleChange = (e) => {
-    setInputValue(e.target.value);
+    setInputValue(e.target.value)
   }
+  // localStorage.setItem('todoList',todoList);
   const handleAdd = () => {
-    if (inputValue==="") {
-      alert("Xin hãy nhập lại!");
-    }else{
-      setTodoList([...todoList,inputValue]);
-      setInputValue("");
+    if (inputValue === '') {
+      alert('Xin hãy nhập lại!')
+    } else {
+      setTodoList([...todoList, inputValue])
+      setInputValue('')
     }
   }
 
   const handleDelete = (e) => {
-    setTodoList(todoList.filter((value,index)=>index!==e)); 
+    setTodoList(todoList.filter((value, index) => index !== e))
   }
   return (
     <>
@@ -32,44 +41,33 @@ function App() {
           <h1 className="text-4xl font-semibold text-[#333] text-center mb-4">
             Todo App
           </h1>
-          <input
-            type="text"
-            className="border-[1px] border-[#666] rounded-lg w-full h-12 py-2 px-4 text-lg mb-4 outline-[#ff8e35]"
-            placeholder="Task name"
-            onChange={(e) => handleChange(e)}
-            value = {inputValue} 
-            onKeyDown={(e) => handleEnter(e)}
-          ></input>
+          <Input
+            funcChange={(e) => handleChange(e)}
+            funcEnter={(e) => handleEnter(e)}
+            info={inputValue}
+          ></Input>
           <button
             className="text-lg p-2 w-full bg-orange-400 rounded-lg text-white font-semibold"
-            onClick={()=> handleAdd()}
+            onClick={() => handleAdd()}
           >
             Add task
           </button>
           <div className="flex flex-col flex-1 justify-start mt-4 gap-4">
-            
-              {todoList.map((task,index) => (
-                <div className="flex flex-row items-center gap-4" key={index}>
-                <div className="text-lg py-2 px-4 bg-orange-400 text-white rounded-lg" >
-                  {index+1}
-                </div>
-                <p className="text-lg flex-1">{task}</p>
-                <button
-                  className="text-lg text-[#da1414]"
-                  onClick={()=>handleDelete(index)}
-                >
-                  DELETE
-                </button>
-              </div>
-              ))
-              }
-            
+            {todoList.map((task, index) => (
+              <Task
+                info={task}
+                index={index}
+                functionDelete={() => handleDelete(index)}
+              ></Task>
+            ))}
           </div>
-          <p className="text-end text-lg">You have {todoList.length} {(todoList.length>1)? "tasks" : "task"}</p>
+          <p className="text-end text-lg">
+            You have {todoList.length} {todoList.length > 1 ? 'tasks' : 'task'}
+          </p>
         </div>
       </div>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
